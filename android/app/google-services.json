@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "995692506441",
+    "project_id": "instrive-68e87",
+    "storage_bucket": "instrive-68e87.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:995692506441:android:e69415f43859753169fe98",
+        "android_client_info": {
+          "package_name": "com.example.instrive"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "995692506441-l8hfpbcdtcml33jpkmqqdohuqdfem3qc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.instrive",
+            "certificate_hash": "bdb85148613bd9ca72a2d2cab91926b89b550e6d"
+          }
+        },
+        {
+          "client_id": "995692506441-a1fn4ons9hfqscluu43m3tvl8hlleq82.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVbYaB1QtgGEqPoRYUR9wHNbd7DiX09wk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "995692506441-a1fn4ons9hfqscluu43m3tvl8hlleq82.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

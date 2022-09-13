@@ -1,8 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:instrive/common/widgets/loading_dialog.dart';
+import 'package:instrive/posts/screens/posts_page.dart';
 import 'common/services/themes.dart';
+import 'registration_login/screens/phone_number_auth.dart';
 import 'registration_login/screens/sign_up_page.dart';
 
-void main(List<String> args) {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -37,6 +44,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return const SignUpPage();
+    return StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (builder, user) {
+          switch (user.connectionState) {
+            case ConnectionState.done:
+            case ConnectionState.active:
+              return (user.data != null)
+                  ? const PostFeedPage()
+                  : const PhoneAuthenticationPage();
+            default:
+              return const CustomLoadingDialog(
+                title: 'Initalizing...',
+              );
+          }
+        });
   }
 }

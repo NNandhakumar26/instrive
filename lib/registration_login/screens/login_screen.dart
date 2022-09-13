@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:instrive/common/services/extensions.dart';
+import 'package:instrive/registration_login/widgets/google_sign_in.dart';
 
-class SecondRoute extends StatefulWidget {
-  const SecondRoute({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  _SecondRouteState createState() => _SecondRouteState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _SecondRouteState extends State<SecondRoute> {
+class _LoginPageState extends State<LoginPage> {
   bool eye = true;
 
   void _toggle() {
@@ -19,12 +21,6 @@ class _SecondRouteState extends State<SecondRoute> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-          statusBarBrightness: Brightness.dark,
-          statusBarIconBrightness: Brightness.dark,
-          statusBarColor: Colors.transparent),
-    );
     return Scaffold(
       backgroundColor: Colors.white,
       // resizeToAvoidBottomPadding: true,
@@ -40,7 +36,10 @@ class _SecondRouteState extends State<SecondRoute> {
             children: <Widget>[
               const Text(
                 "Log in",
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const SizedBox(
                 height: 70,
@@ -49,13 +48,10 @@ class _SecondRouteState extends State<SecondRoute> {
                 keyboardType: TextInputType.emailAddress,
                 autocorrect: false,
                 decoration: InputDecoration(
-                  // hintText: "Email",
                   labelText: "Email",
                 ),
               ),
-              const SizedBox(
-                height: 30,
-              ),
+              30.height,
               TextField(
                 keyboardType: TextInputType.text,
                 autocorrect: false,
@@ -70,9 +66,7 @@ class _SecondRouteState extends State<SecondRoute> {
                 ),
                 obscureText: eye,
               ),
-              const SizedBox(
-                height: 30,
-              ),
+              30.height,
               SizedBox(
                 height: 50,
                 child: ElevatedButton(
@@ -94,10 +88,7 @@ class _SecondRouteState extends State<SecondRoute> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    const Text(
-                      "Already Have an account - ",
-                      textAlign: TextAlign.center,
-                    ),
+                    "Already Have an account - ".centerText,
                     TextButton(
                       onPressed: () {
                         Navigator.pop(context);
@@ -115,58 +106,8 @@ class _SecondRouteState extends State<SecondRoute> {
                   ],
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
-                child: Text(
-                  "Or sign in with",
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  SizedBox(
-                    height: 50,
-                    child: OutlinedButton(
-                      style: const ButtonStyle(
-                        padding: MaterialStatePropertyAll(
-                          EdgeInsets.symmetric(horizontal: 32),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const <Widget>[
-                          // Icon(
-                          //   Icons.facebook_rounded,
-                          //   // Icons.twitter,
-                          //   size: 20,
-                          // ),
-                          // SizedBox(
-                          //   width: 5,
-                          // ),
-                          Text(
-                            "Google",
-                            style: TextStyle(
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                      // shape: StadiumBorder(),
-                      // highlightedBorderColor: Colors.black,
-                      // borderSide: BorderSide(color: Colors.black),
-                      onPressed: () {},
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
+              GoogleSignInWidget(),
+              20.height,
             ],
           ),
         ),
