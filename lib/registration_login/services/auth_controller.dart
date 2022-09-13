@@ -1,6 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import '../../common/services/navigation.dart';
+import '../../posts/screens/posts_page.dart';
+import '../../profile/profile_screen.dart';
 
 class AuthController {
 // static  final userCredential =
@@ -68,5 +73,22 @@ class AuthController {
       },
       codeAutoRetrievalTimeout: (String verificationId) {},
     );
+  }
+
+  static void registrationNavigation(
+      BuildContext context, UserCredential userCredential) {
+    if (userCredential.additionalUserInfo!.isNewUser) {
+      CustomNavigation.navigate(
+        context,
+        const ProfileScreen(
+          isNewUser: true,
+        ),
+      );
+    } else {
+      CustomNavigation.navigate(
+        context,
+        const PostFeedPage(),
+      );
+    }
   }
 }

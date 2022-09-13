@@ -21,6 +21,7 @@ class _PhoneAuthenticationPageState extends State<PhoneAuthenticationPage> {
   bool isContactNumberPage = true;
   String? contactNumber;
   String? otp;
+  String? verificationId;
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +57,11 @@ class _PhoneAuthenticationPageState extends State<PhoneAuthenticationPage> {
       ),
       body: SingleChildScrollView(
         child: Container(
+          height: MediaQuery.of(context).size.height,
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
                 (isContactNumberPage)
@@ -69,25 +72,57 @@ class _PhoneAuthenticationPageState extends State<PhoneAuthenticationPage> {
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              70.height,
-              TextField(
-                keyboardType: TextInputType.emailAddress,
-                autocorrect: false,
-                // validator: (value) => Validators.isValidPhoneNumber(value!)
-                //     ? null
-                //     : 'Invalid Contact Number',
-                onChanged: (value) => contactNumber = value,
-                decoration: const InputDecoration(
-                  labelText: "Contact Number",
-                ),
-              ),
+              // 70.height,
+              (isContactNumberPage)
+                  ? TextField(
+                      keyboardType: TextInputType.number,
+                      autocorrect: false,
+                      // validator: (value) => Validators.isValidPhoneNumber(value!)
+                      //     ? null
+                      //     : 'Invalid Contact Number',
+                      onChanged: (value) => contactNumber = value,
+
+                      decoration: const InputDecoration(
+                        labelText: "Contact Number",
+                      ),
+                    )
+                  : Column(
+                      children: [
+                        'OTP has been sent to the number'.centerText,
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            contactNumber.toString(),
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ),
+                        8.height,
+                        TextField(
+                          keyboardType: TextInputType.number,
+                          autocorrect: false,
+                          // validator: (value) => Validators.isValidPhoneNumber(value!)
+                          //     ? null
+                          //     : 'Invalid Contact Number',
+                          onChanged: (value) => otp = value,
+                          style: const TextStyle(
+                            color: Colors.black87,
+                            fontSize: 18,
+                          ),
+                          textAlign: TextAlign.center,
+                          decoration: const InputDecoration(
+                            labelText: "OTP Number",
+                          ),
+                        ),
+                      ],
+                    ),
               30.height,
               SizedBox(
                 height: 50,
                 child: ElevatedButton(
-                  child: const Text(
-                    "Sign up",
-                    style: TextStyle(
+                  child: Text(
+                    (isContactNumberPage) ? "Send OTP" : 'Verify OTP',
+                    style: const TextStyle(
                       color: Colors.white,
                     ),
                   ),
@@ -132,54 +167,51 @@ class _PhoneAuthenticationPageState extends State<PhoneAuthenticationPage> {
   void contactNumberRegistration() async {
     if (Validators.isValidPhoneNumber(contactNumber)) {
       showSnackBar('Please wait...');
+      // hide the keyboard if it is open
+
+      FocusManager.instance.primaryFocus?.unfocus();
+
       final auth = AuthController.auth;
 
       await auth.verifyPhoneNumber(
         phoneNumber: '+91$contactNumber',
         timeout: const Duration(seconds: 60),
         verificationCompleted: (PhoneAuthCredential credential) async {
+          print('verification Completed function');
           UserCredential userCredential =
               await auth.signInWithCredential(credential);
 
           if (userCredential.user != null) {
             if (!mounted) return;
-            if (userCredential.additionalUserInfo!.isNewUser) {
-              CustomNavigation.navigate(
-                context,
-                const ProfileScreen(
-                  isNewUser: true,
-                ),
-              );
-            } else {
-              CustomNavigation.navigate(
-                context,
-                const PostFeedPage(),
-              );
-            }
+            AuthController.registrationNavigation(context, userCredential);
           }
         },
         verificationFailed: (FirebaseAuthException e) {
+          print('verification failed');
           if (e.code == 'invalid-phone-number') {
             showSnackBar('The provided phone number is not valid.');
           }
         },
-        codeSent: (String verificationId, int? resendToken) async {
-          String smsCode = 'xxxx';
-          PhoneAuthCredential credential = PhoneAuthProvider.credential(
-            verificationId: verificationId,
-            smsCode: smsCode,
-          );
-          await auth.signInWithCredential(credential);
+        codeSent: (String thisVerificationId, int? resendToken) async {
+          print('code sent function');
+          setState(() {
+            isContactNumberPage = false;
+            verificationId = thisVerificationId;
+          });
+          showSnackBar('OTP has been sent successfully');
         },
-        codeAutoRetrievalTimeout: (String verificationId) {},
+        codeAutoRetrievalTimeout: (String thisVerificationId) {
+          print('Inside code auto retrieval timeout');
+          verificationId = thisVerificationId;
+        },
       );
     } else {
       showDialog(
         context: context,
         builder: (builder) => AlertDialog(
-          title: 'Invalid Phone Number'.plainText,
-          titlePadding: const EdgeInsets.all(8),
-          actions: ['Retry', 'Cancel']
+          title: 'Invalid Phone Number'.centerText,
+          titlePadding: const EdgeInsets.all(16),
+          actions: ['Cancel', 'Retry']
               .map(
                 (e) => TextButton(
                   onPressed: () => Navigator.pop(context),
@@ -193,7 +225,19 @@ class _PhoneAuthenticationPageState extends State<PhoneAuthenticationPage> {
     }
   }
 
-  Future<void> validateOtp() async {}
+  Future<void> validateOtp() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+      verificationId: verificationId!,
+      smsCode: otp!,
+    );
+    UserCredential userCredential =
+        await AuthController.auth.signInWithCredential(credential);
+    if (userCredential.user != null) {
+      if (!mounted) return;
+      AuthController.registrationNavigation(context, userCredential);
+    }
+  }
 
   void showSnackBar(String message, {bool isError = false}) async =>
       ScaffoldMessenger.of(context).showSnackBar(

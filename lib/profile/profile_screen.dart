@@ -20,7 +20,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   String? photoUrl;
   String? userName;
-  int? contactNumber;
+  String? contactNumber;
   String? email;
   String? password;
   String? passwordConfirm;
@@ -33,14 +33,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (user != null) {
       photoUrl = user.photoURL;
       userName = user.displayName;
-      contactNumber =
-          (user.phoneNumber != null) ? int.parse(user.phoneNumber!) : null;
+      contactNumber = user.phoneNumber;
       email = user.email;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    print(AuthController.user!.phoneNumber.toString());
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -149,16 +149,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 TextFormField(
                   decoration:
                       inputDecoration('Mobile Number', Icons.call_rounded),
-                  enabled: false,
-                  initialValue:
-                      (contactNumber != null) ? contactNumber.toString() : '',
-                  validator: (value) => Validators.isValidPhoneNumber(value)
-                      ? null
-                      : 'Invalid Phone Number',
+                  readOnly: true,
+                  initialValue: contactNumber,
+                  // validator: (value) => Validators.isValidPhoneNumber(value)
+                  //     ? null
+                  //     : 'Invalid Phone Number',
                   onSaved: (value) {
-                    if (int.tryParse(value!) != null) {
-                      contactNumber = int.tryParse(value);
-                    }
+                    contactNumber = value;
                   },
                 ),
                 TextFormField(
@@ -224,99 +221,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       hintText: title,
       icon: Icon(
         iconData,
-      ),
-    );
-  }
-}
-
-class RichTextField extends StatelessWidget {
-  final String title;
-  final String? value;
-  final IconData? icon;
-  final Widget? widget;
-  final int? multiLine;
-  final Function? onChanged;
-  final String? initialValue;
-  final bool? isReadonly;
-
-  const RichTextField({
-    super.key,
-    required this.title,
-    this.value,
-    this.icon,
-    this.widget,
-    this.multiLine = 1,
-    this.onChanged,
-    this.initialValue,
-    this.isReadonly = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Visibility(
-            visible: (icon == null) ? false : true,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
-              child: Icon(
-                icon,
-                size: 18,
-                color: Colors.blue.shade700,
-                // color: Style.nearlyDarkBlue.withOpacity(0.32),
-              ),
-            ),
-          ),
-          Flexible(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(5),
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.headline6!.copyWith(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                          // color: Style.darkText.withOpacity(0.87),
-                        ),
-                  ),
-                ),
-                (widget == null)
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 4, vertical: 6),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            hintText: title,
-                          ),
-                          initialValue: initialValue ?? '',
-                          readOnly: isReadonly ?? false,
-                          maxLines: multiLine,
-                          onChanged: (String text) {
-                            if (onChanged != null) {
-                              onChanged!(text);
-                            }
-                          },
-                          style:
-                              Theme.of(context).textTheme.bodyText2!.copyWith(
-                                    color: Colors.black87,
-                                    letterSpacing: 0.4,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                        ),
-                      )
-                    : widget!,
-              ],
-            ),
-          )
-        ],
       ),
     );
   }
