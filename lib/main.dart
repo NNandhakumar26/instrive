@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:instrive/common/widgets/loading_dialog.dart';
 import 'package:instrive/posts/screens/posts_page.dart';
 import 'package:instrive/profile/profile_screen.dart';
+import 'package:instrive/registration_login/screens/login_screen.dart';
 import 'package:instrive/registration_login/services/auth_controller.dart';
 import 'common/services/themes.dart';
 import 'registration_login/screens/phone_number_auth.dart';
@@ -53,8 +54,13 @@ class _HomeScreenState extends State<HomeScreen> {
           case ConnectionState.done:
           case ConnectionState.active:
             return (user.data != null)
-                ? const PostFeedPage()
-                : const PhoneAuthenticationPage();
+                ? (user.data!.emailVerified)
+                    ? PostFeedPage()
+                    : ProfileScreen(
+                        isNewUser: true,
+                      )
+                : LoginPage();
+          // : const PhoneAuthenticationPage();
           // : const ProfileScreen(
           //     isNewUser: true,
           //   );

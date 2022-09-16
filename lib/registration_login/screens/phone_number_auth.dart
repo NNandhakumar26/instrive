@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instrive/common/services/extensions.dart';
@@ -22,6 +24,30 @@ class _PhoneAuthenticationPageState extends State<PhoneAuthenticationPage> {
   String? contactNumber;
   String? otp;
   String? verificationId;
+  late Timer timer;
+  int secondsRemaining = 30;
+  bool enableResend = false;
+
+  void initializeTimer() {
+    timer = Timer.periodic(Duration(seconds: 1), (_) {
+      if (secondsRemaining != 0) {
+        setState(() {
+          secondsRemaining--;
+        });
+      } else {
+        setState(() {
+          enableResend = true;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    if (timer.isActive) timer.cancel();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +140,8 @@ class _PhoneAuthenticationPageState extends State<PhoneAuthenticationPage> {
                             labelText: "OTP Number",
                           ),
                         ),
+                        8.height,
+                        '$secondsRemaining'.plainText,
                       ],
                     ),
               30.height,

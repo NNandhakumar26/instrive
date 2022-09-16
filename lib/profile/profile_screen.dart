@@ -2,14 +2,23 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instrive/common/services/extensions.dart';
 import 'package:instrive/common/services/navigation.dart';
+import 'package:instrive/common/widgets/empty_widget.dart';
 import 'package:instrive/common/widgets/loading_dialog.dart';
 import 'package:instrive/posts/screens/posts_page.dart';
+import 'package:instrive/registration_login/screens/verification_screen.dart';
 import 'package:instrive/registration_login/services/auth_controller.dart';
 import 'package:instrive/registration_login/services/validators.dart';
 
 class ProfileScreen extends StatefulWidget {
   final bool isNewUser;
-  const ProfileScreen({super.key, this.isNewUser = false});
+  final String? emailAddress;
+  final String? password;
+  const ProfileScreen({
+    super.key,
+    this.isNewUser = false,
+    this.emailAddress,
+    this.password,
+  });
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -29,6 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     User? user = AuthController.user;
     if (user != null) {
       photoUrl = user.photoURL;
@@ -40,18 +50,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(AuthController.user!.phoneNumber.toString());
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: Colors.blue.shade800.withOpacity(0.60),
+          leadingWidth: (widget.isNewUser) ? 0 : 18,
+          leading: Visibility(
+            visible: !widget.isNewUser,
+            child: IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
           ),
           title: Text(
             'Profile Page',
@@ -146,6 +158,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ? 'Cannot be empty'
                       : null,
                 ),
+
+                ListTile(
+                  onTap: () => CustomNavigation.navigateBack(
+                    context,
+                    VerificationPage(
+                      verify: Verify.emailAddress,
+                    ),
+                  ),
+                  title: 'Update Email Address'.plainText,
+                  trailing: forwardIcon,
+                  subtitle: secondayTitle((AuthController.user!.emailVerified)
+                      ? 'Email Verified'
+                      : 'Email Verification Pending'),
+                ),
+                ListTile(
+                  title: 'Update Phone Number'.plainText,
+                  trailing: forwardIcon,
+                  subtitle: secondayTitle('Authenticate phone number'),
+                ),
+                ListTile(
+                  enabled: email?.isNotEmpty ?? false,
+                  title: (widget.isNewUser)
+                      ? 'Set up password'.plainText
+                      : 'Reset Password'.plainText,
+                  trailing: forwardIcon,
+                  subtitle: secondayTitle('Authenticate to reset password'),
+                ),
+
                 TextFormField(
                   decoration:
                       inputDecoration('Mobile Number', Icons.call_rounded),
@@ -190,8 +230,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Navigator.pop(context);
                       // ** Remove the main screen **
                       if (widget.isNewUser) {
-                        CustomNavigation.navigate(
-                            context, const PostFeedPage());
+                        CustomNavigation.navigate(context, PostFeedPage());
                       } else {
                         Navigator.pop(context);
                       }
@@ -216,6 +255,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget secondayTitle(String title) => Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          EmptyWidget(
+            title,
+            textAlign: TextAlign.left,
+          ),
+        ],
+      );
+  var forwardIcon = Icon(
+    Icons.arrow_forward_ios,
+    size: 16,
+  );
   InputDecoration inputDecoration(String title, IconData iconData) {
     return InputDecoration(
       hintText: title,

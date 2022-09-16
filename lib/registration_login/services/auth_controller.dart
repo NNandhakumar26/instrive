@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -14,7 +13,7 @@ class AuthController {
   static FirebaseAuth auth = FirebaseAuth.instance;
   static User? user = auth.currentUser;
 
-  Future<UserCredential> signInWithGoogle() async {
+  static Future<UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
@@ -32,7 +31,7 @@ class AuthController {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
-  Future<UserCredential> createUser(
+  static Future<UserCredential> createUser(
       {required String userEmail, required String password}) async {
     UserCredential? userCredential =
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -41,6 +40,22 @@ class AuthController {
     );
 
     return userCredential;
+  }
+
+  static Future<String?> signInUser(String email, String password) async {
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      return null;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        return 'New User';
+      } else if (e.code == 'wrong-password') {
+        return 'Incorrect password.';
+      } else {
+        return e.code;
+      }
+    }
   }
 
   // ** Phone Authentication **
@@ -87,7 +102,7 @@ class AuthController {
     } else {
       CustomNavigation.navigate(
         context,
-        const PostFeedPage(),
+        PostFeedPage(),
       );
     }
   }

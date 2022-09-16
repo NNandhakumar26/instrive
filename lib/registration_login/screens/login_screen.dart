@@ -1,6 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:instrive/common/services/extensions.dart';
+import 'package:instrive/common/services/navigation.dart';
+import 'package:instrive/common/widgets/alert_dialog.dart';
+import 'package:instrive/common/widgets/loading_dialog.dart';
+import 'package:instrive/common/widgets/widget_util.dart';
+import 'package:instrive/posts/screens/posts_page.dart';
+import 'package:instrive/profile/profile_screen.dart';
+import 'package:instrive/registration_login/services/auth_controller.dart';
 import 'package:instrive/registration_login/widgets/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
@@ -11,13 +19,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool eye = true;
-
-  void _toggle() {
-    setState(() {
-      eye = !eye;
-    });
-  }
+  bool obscureText = true;
+  bool isRegistrationPage = false;
+  String? loginId;
+  String? password;
 
   @override
   Widget build(BuildContext context) {
@@ -44,39 +49,86 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(
                 height: 70,
               ),
-              const TextField(
-                keyboardType: TextInputType.emailAddress,
+              TextField(
+                // keyboardType: TextInputType.emailAddress,
+                onChanged: (value) => loginId = value,
                 autocorrect: false,
                 decoration: InputDecoration(
-                  labelText: "Email",
+                  labelText: "Email ID",
                 ),
               ),
               30.height,
-              TextField(
-                keyboardType: TextInputType.text,
-                autocorrect: false,
+              TextFormField(
+                // initialValue: password,
+                obscureText: obscureText,
+                onChanged: (value) {
+                  password = value;
+                },
                 decoration: InputDecoration(
-                  labelText: "Password",
-                  suffixIcon: GestureDetector(
-                    onTap: _toggle,
-                    child: const Icon(
-                      Icons.remove_red_eye,
-                    ),
+                  hintText: 'Your password',
+                  hintStyle: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 14,
+                  ),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        obscureText = !obscureText;
+                      });
+                    },
+                    icon: Icon(Icons.remove_red_eye),
                   ),
                 ),
-                obscureText: eye,
               ),
               30.height,
               SizedBox(
                 height: 50,
                 child: ElevatedButton(
-                  // color: Colors.black,
-                  // elevation: 15.0,
-                  // shape: StadiumBorder(),
-                  // splashColor: Colors.white54,
-                  onPressed: () {},
+                  onPressed: () async {
+                    WidgetUtil.loadingDialog(context, title: 'Hold on a while');
+                    String? response =
+                        await AuthController.signInUser(loginId!, password!);
+                    if (!mounted) return;
+                    Navigator.pop(context);
+                    if (response is String) {
+                      if (response == 'New User') {
+                        await AuthController.createUser(
+                          userEmail: loginId!,
+                          password: password!,
+                        );
+                        if (!mounted) return;
+                        CustomNavigation.navigate(
+                          context,
+                          ProfileScreen(
+                            isNewUser: true,
+                            emailAddress: loginId,
+                            password: password,
+                          ),
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (builder) => CustomAlertDialog(
+                            context: context,
+                            title: 'Error',
+                            columnWidgets: [
+                              response.plainText,
+                            ],
+                            primaryButton: 'Retry',
+                            secondaryButton: 'Cancel',
+                          ),
+                        );
+                      }
+                    } else {
+                      if (!mounted) return;
+                      CustomNavigation.navigate(
+                        context,
+                        PostFeedPage(),
+                      );
+                    }
+                  },
                   child: const Text(
-                    "Log in",
+                    "Continue",
                     style: TextStyle(
                       color: Colors.white,
                     ),
@@ -88,15 +140,19 @@ class _LoginPageState extends State<LoginPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    "Already Have an account - ".centerText,
+                    (isRegistrationPage)
+                        ? "Already have an account - ".centerText
+                        : "Don\'t Have an account - ".centerText,
                     TextButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                        setState(() {
+                          isRegistrationPage = !isRegistrationPage;
+                        });
                       },
                       // highlightColor: Colors.black,
                       // shape: StadiumBorder(),
-                      child: const Text(
-                        "Sign up",
+                      child: Text(
+                        (isRegistrationPage) ? "Sign in" : 'Sign up',
                         style: TextStyle(
                           color: Colors.grey,
                           fontSize: 17,

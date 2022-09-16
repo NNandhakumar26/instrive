@@ -1,0 +1,5 @@
+Email Sign UP
+    Get the email, password, verify email and procced to new user or existing user page 
+
+Mobile Authentication
+    Authenticate the mobile user and then Get the password and then setup the mobile user password

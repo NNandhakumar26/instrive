@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instrive/common/services/extensions.dart';
+import 'package:instrive/common/widgets/loading_dialog.dart';
+import 'package:instrive/registration_login/services/auth_controller.dart';
 
 class GoogleSignInWidget extends StatelessWidget {
   GoogleSignInWidget({super.key});
@@ -28,6 +31,19 @@ class GoogleSignInWidget extends StatelessWidget {
             SizedBox(
               height: 50,
               child: OutlinedButton(
+                onPressed: () async {
+                  const CustomLoadingDialog();
+                  UserCredential userCredential =
+                      await AuthController.signInWithGoogle();
+                  if (userCredential.user != null) {
+                    // if (!mounted) return;
+                    // ignore: use_build_context_synchronously
+                    AuthController.registrationNavigation(
+                      context,
+                      userCredential,
+                    );
+                  }
+                },
                 style: const ButtonStyle(
                   padding: MaterialStatePropertyAll(
                     EdgeInsets.symmetric(horizontal: 32),
@@ -55,7 +71,6 @@ class GoogleSignInWidget extends StatelessWidget {
                 // shape: StadiumBorder(),
                 // highlightedBorderColor: Colors.black,
                 // borderSide: BorderSide(color: Colors.black),
-                onPressed: () {},
               ),
             ),
           ],
