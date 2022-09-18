@@ -24,7 +24,6 @@ class CustomshowLoading extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.button!.copyWith(
                       fontSize: 14,
-                      color: Colors.black87,
                     ),
               ),
             )

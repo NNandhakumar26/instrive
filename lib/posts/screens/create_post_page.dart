@@ -111,28 +111,34 @@ class _PostCreationPageState extends State<PostCreationPage> {
             // TODO:start from here
             ...files
                 .map(
-                  (imageFile) => ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      side: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                        width: 0.32,
+                  (imageFile) => Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8.0,
+                      horizontal: 4,
+                    ),
+                    child: ListTile(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                        side: BorderSide(
+                          color: Theme.of(context).primaryColor,
+                          width: 0.32,
+                        ),
                       ),
-                    ),
-                    leading: CircleAvatar(
-                      foregroundImage: FileImage(imageFile!),
-                    ),
-                    title: Text(
-                      'Image ${files.indexOf(imageFile) + 1}',
-                    ),
-                    trailing: IconButton(
-                      onPressed: () {
-                        files.remove(imageFile);
-                        setState(() {});
-                      },
-                      icon: Icon(
-                        Icons.delete,
-                        color: Colors.red.shade600.withOpacity(0.87),
+                      leading: CircleAvatar(
+                        foregroundImage: FileImage(imageFile!),
+                      ),
+                      title: Text(
+                        'Image ${files.indexOf(imageFile) + 1}',
+                      ),
+                      trailing: IconButton(
+                        onPressed: () {
+                          files.remove(imageFile);
+                          setState(() {});
+                        },
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.red.shade600.withOpacity(0.87),
+                        ),
                       ),
                     ),
                   ),

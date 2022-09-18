@@ -72,9 +72,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(appUser?.bio);
     return SafeArea(
       child: Scaffold(
+        key: scaffoldKey,
         appBar: AppBar(
           leadingWidth: (widget.isNewUser) ? 0 : 18,
           leading: Visibility(
@@ -100,7 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: ListView(
               children: [
                 24.height,
-                displayImageWidget(context),
+                displayImageWidget(scaffoldKey.currentContext ?? context),
                 24.height,
                 TextFormField(
                   decoration: inputDecoration('Name', Icons.person_add),
@@ -238,13 +238,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           GestureDetector(
             onTap: () {
               showDialog(
-                context: context,
+                context: scaffoldKey.currentContext!,
                 builder: (context) => GetImageWidget(),
               ).then(
                 (imageFile) {
                   if (imageFile != null) {
                     showDialog(
-                      context: context,
+                      context: scaffoldKey.currentContext!,
                       builder: (builder) => CustomshowLoading(
                         title: 'Uploading image',
                       ),
@@ -260,7 +260,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         print('Done');
 
                         AuthController().user!.updatePhotoURL(imageUrl).then(
-                              (value) => Navigator.of(context).pop,
+                              (value) =>
+                                  Navigator.pop(scaffoldKey.currentContext!),
                             );
                         print('Done 2');
                         return;
@@ -325,7 +326,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       userID: user.uid,
       email: user.email,
     );
-    print(appUser.toString());
     if (appUser != null) await Network.updateUser(appUser!);
   }
 

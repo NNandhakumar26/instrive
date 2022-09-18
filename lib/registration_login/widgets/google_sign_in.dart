@@ -40,7 +40,7 @@ class SignInOptionsWidget extends StatelessWidget {
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.phone,
                       size: 18,
@@ -51,10 +51,9 @@ class SignInOptionsWidget extends StatelessWidget {
                     ),
                     Text(
                       "Phone",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                      ),
+                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                            fontSize: 16,
+                          ),
                     ),
                   ],
                 ),
@@ -92,12 +91,11 @@ class SignInOptionsWidget extends StatelessWidget {
                     const SizedBox(
                       width: 10,
                     ),
-                    const Text(
+                    Text(
                       "Google",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                      ),
+                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                            fontSize: 16,
+                          ),
                     ),
                   ],
                 ),
