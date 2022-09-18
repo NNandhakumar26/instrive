@@ -12,11 +12,11 @@ class EmptyWidget extends StatelessWidget {
       child: Text(
         message,
         textAlign: textAlign,
-        style: Theme.of(context).textTheme.headline6!.copyWith(
-              color: Colors.black26,
-              fontWeight: FontWeight.w600,
-              fontSize: 15,
-            ),
+        // style: Theme.of(context).textTheme.subtitle1!.copyWith(
+        //       // color: Colors.black26,
+        //       // fontWeight: FontWeight.w600,
+        //       // fontSize: 15,
+        //     ),
       ),
     );
   }

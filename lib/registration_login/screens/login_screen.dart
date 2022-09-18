@@ -27,8 +27,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      // resizeToAvoidBottomPadding: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -39,12 +37,12 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              const Text(
+              Text(
                 "Log in",
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.w800,
-                ),
+                style: Theme.of(context).textTheme.headline6!.copyWith(
+                      fontSize: 25,
+                      fontWeight: FontWeight.w800,
+                    ),
               ),
               const SizedBox(
                 height: 70,
@@ -65,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
                   password = value;
                 },
                 decoration: InputDecoration(
-                  hintText: 'Your password',
+                  labelText: 'Your password',
                   hintStyle: TextStyle(
                     color: Colors.grey,
                     fontSize: 14,

@@ -17,89 +17,73 @@ class PostContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      // padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    return Card(
       margin: EdgeInsets.symmetric(vertical: 12, horizontal: 6),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.50),
-        border: Border.all(
-          width: 0.3,
-        ),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(2),
       ),
-      child: InkWell(
-        onTap: () {
-          CustomNavigation.navigateBack(
-            context,
-            Container(),
-          );
-        },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            SizedBox(
-              height: 8,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          8.height,
+          PostUserContainer(thisPost),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height / 1.64,
+              maxWidth: MediaQuery.of(context).size.width,
             ),
-            PostUserContainer(thisPost),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height / 1.64,
-                maxWidth: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.grey,
+                width: 0.8,
               ),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.grey,
-                  width: 0.8,
-                ),
-                borderRadius: BorderRadius.circular(2),
-              ),
-              child: (thisPost.postUrls!.length == 1)
-                  ? CachedNetworkImage(
-                      imageUrl: thisPost.postUrls![0],
-                      color: Colors.black,
-                    )
-                  : ImageSlideshow(
-                      initialPage: 0,
-                      indicatorColor: Colors.blue,
-                      indicatorBackgroundColor: Colors.grey,
-                      children: thisPost.postUrls!
-                          .map(
-                            (e) => CachedNetworkImage(
-                              imageUrl: e,
-                            ),
-                          )
-                          .toList(),
-                    ),
+              borderRadius: BorderRadius.circular(2),
             ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      thisPost.description ?? '',
-                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
+            child: (thisPost.postUrls!.length == 1)
+                ? CachedNetworkImage(
+                    imageUrl: thisPost.postUrls![0],
+                    color: Colors.black,
+                  )
+                : ImageSlideshow(
+                    initialPage: 0,
+                    indicatorColor: Colors.blue,
+                    indicatorBackgroundColor: Colors.grey,
+                    children: thisPost.postUrls!
+                        .map(
+                          (e) => CachedNetworkImage(
+                            imageUrl: e,
                           ),
-                      maxLines: 4,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.left,
-                    ),
+                        )
+                        .toList(),
                   ),
-                  SizedBox(
-                    height: 16,
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    thisPost.description ?? '',
+                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.left,
                   ),
-                  8.height,
-                  const Divider(),
-                ],
-              ),
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                // 8.height,
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -140,7 +124,7 @@ class PostUserContainer extends StatelessWidget {
               fontWeight: FontWeight.w400,
             ),
       ),
-      trailing: (post.userID == (AuthController.user?.uid ?? ''))
+      trailing: (post.userID == (AuthController().user?.uid ?? ''))
           ? 'Follow'.subTitle
           : FittedBox(
               fit: BoxFit.scaleDown,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:instrive/common/services/extensions.dart';
 import 'package:instrive/common/services/navigation.dart';
 import 'package:instrive/common/widgets/common_appbar.dart';
+import 'package:instrive/common/widgets/empty_widget.dart';
 import 'package:instrive/main.dart';
 import 'package:instrive/posts/screens/create_post_page.dart';
 import 'package:instrive/profile/profile_screen.dart';
@@ -13,17 +14,22 @@ import '../../modals/post_modal.dart';
 import '../widgets/display_post_container.dart';
 
 class PostFeedPage extends StatefulWidget {
-  PostFeedPage({super.key});
+  final String? userId;
+  PostFeedPage({
+    super.key,
+    this.userId,
+  });
 
   @override
   State<PostFeedPage> createState() => _PostFeedPageState();
 }
 
 class _PostFeedPageState extends State<PostFeedPage> {
-  final user = AuthController.user;
+  final user = AuthController().user;
   final _scrollController = ScrollController();
   bool isLoadingPosts = false;
   List<Post> postList = [];
+  bool get isUserPage => (widget.userId != null) ? true : false;
 
   @override
   void initState() {
@@ -38,14 +44,15 @@ class _PostFeedPageState extends State<PostFeedPage> {
         isLoadingPosts = true;
       });
     }
-    await Network.readAllPosts().then((value) {
-      postList.clear();
-
-      postList.addAll(value);
-    });
-    for (var item in postList) {
-      print(item.postUrls);
+    List<Post> posts = [];
+    if (widget.userId != null) {
+      posts = await Network.readUserPosts(widget.userId!);
+    } else {
+      posts = await Network.readAllPosts();
     }
+    postList.clear();
+    postList.addAll(posts);
+
     setState(() {
       isLoadingPosts = false;
     });
@@ -55,10 +62,12 @@ class _PostFeedPageState extends State<PostFeedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size(
-          double.infinity,
-          60,
-        ),
+        preferredSize: (isUserPage)
+            ? Size(0, 0)
+            : Size(
+                double.infinity,
+                60,
+              ),
         child: CompanyAppbar(
           showProfileIcon: true,
           actionWidget: IconButton(
@@ -82,15 +91,22 @@ class _PostFeedPageState extends State<PostFeedPage> {
                 return createPostWidget(context);
               }
 
-              return Column(
-                children: [
-                  PostContainer(
-                    thisPost: postList[index - 1],
-                  ),
-                  if (index == postList.length && isLoadingPosts)
-                    CircularProgressIndicator(),
-                ],
-              );
+              return (postList.isNotEmpty)
+                  ? Column(
+                      children: [
+                        PostContainer(
+                          thisPost: postList[index - 1],
+                        ),
+                        if (index == postList.length && isLoadingPosts)
+                          CircularProgressIndicator(),
+                      ],
+                    )
+                  : Container(
+                      color: Colors.red,
+                      height: 800,
+                      width: 80,
+                      child: Text('No Posts'),
+                    );
             },
           ),
         ),
@@ -98,23 +114,26 @@ class _PostFeedPageState extends State<PostFeedPage> {
     );
   }
 
-  ListTile createPostWidget(BuildContext context) {
-    return ListTile(
-      onTap: () => CustomNavigation.navigateBack(context, PostCreationPage()),
-      title: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4.0),
-        child: Text(
-          'Create Post',
-          style: Theme.of(context).textTheme.headline6!.copyWith(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
+  Widget createPostWidget(BuildContext context) {
+    return Visibility(
+      visible: !isUserPage,
+      child: ListTile(
+        onTap: () => CustomNavigation.navigateBack(context, PostCreationPage()),
+        title: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Text(
+            'Create Post',
+            style: Theme.of(context).textTheme.headline6!.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+          ),
         ),
-      ),
-      subtitle: 'Click to create a new post'.subTitle,
-      trailing: Icon(
-        Icons.arrow_forward_ios_rounded,
-        size: 18,
+        subtitle: 'Click to create a new post'.subTitle,
+        trailing: Icon(
+          Icons.arrow_forward_ios_rounded,
+          size: 18,
+        ),
       ),
     );
   }

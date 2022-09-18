@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+class Constants {
+  static ValueNotifier<bool> themeNotifier = ValueNotifier(true);
+  static ThemeData lightTheme = ThemeData.light();
+  static ThemeData darkTheme = ThemeData.dark();
+}
+
 extension IntExtensions on int? {
   /// Leaves given height of space
   Widget get height => SizedBox(height: this?.toDouble());

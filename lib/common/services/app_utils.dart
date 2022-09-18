@@ -1,15 +1,8 @@
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 
 class AppUtil {
-  static Future<XFile?> chooseFile() async {
-    return await ImagePicker().pickImage(source: ImageSource.gallery);
-  }
-
   static Future<String> uploadFile({
     required bool isPost,
     required File file,
@@ -27,7 +20,7 @@ class AppUtil {
 
     try {
       await imageRef.putFile(file);
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       // ...
     }
     return await imageRef.getDownloadURL();
@@ -38,7 +31,7 @@ class AppUtil {
 
     try {
       await storageRef.delete();
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       // ...
     }
     return;

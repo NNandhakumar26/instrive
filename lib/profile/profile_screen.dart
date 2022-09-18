@@ -4,6 +4,7 @@ import 'package:instrive/common/services/app_utils.dart';
 import 'package:instrive/common/services/extensions.dart';
 import 'package:instrive/common/services/navigation.dart';
 import 'package:instrive/common/widgets/empty_widget.dart';
+import 'package:instrive/common/widgets/loading_dialog.dart';
 import 'package:instrive/common/widgets/widget_util.dart';
 import 'package:instrive/modals/app_users.dart';
 import 'package:instrive/posts/screens/posts_page.dart';
@@ -37,6 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? password;
   String? passwordConfirm;
   AppUser? appUser;
+  final TextEditingController aboutMeController = TextEditingController();
   User? user;
 
   @override
@@ -44,7 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // TODO: implement initState
     super.initState();
 
-    user = AuthController.user;
+    user = AuthController().user;
     initializeAppuser(user);
     if (user != null) {
       userName = user!.displayName;
@@ -59,6 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         (value) => setState(
           () {
             appUser = value;
+            aboutMeController.text = appUser?.bio ?? '';
           },
         ),
       );
@@ -69,6 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(appUser?.bio);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -78,6 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: IconButton(
               icon: Icon(
                 Icons.arrow_back_ios_new_rounded,
+                size: 18,
               ),
               onPressed: () {
                 Navigator.pop(context);
@@ -86,16 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           title: Text(
             'Profile Page',
-            style: Theme.of(context).textTheme.headline6!.copyWith(
-                  color: Colors.blue.shade800.withOpacity(0.87),
-                  letterSpacing: -0.4,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
           ),
-          elevation: 4,
-          shadowColor: Colors.black26,
-          backgroundColor: Colors.white,
         ),
         body: Form(
           key: formKey,
@@ -146,10 +142,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     'About',
                     Icons.description_outlined,
                   ),
+                  controller: aboutMeController,
                   maxLines: 4,
-                  initialValue: appUser?.bio ?? '',
                   onSaved: (value) {
-                    if (appUser != null) appUser!.bio = value;
+                    appUser!.bio = value;
+                    print('Inside save function ${appUser!.bio}');
                   },
                 ),
                 12.height,
@@ -164,7 +161,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   title: 'Update Email Address'.plainText,
                   trailing: forwardIcon,
                   subtitle: 'Feature under Development'.plainText,
-                  // subtitle: secondayTitle((AuthController.user!.emailVerified)
+                  // subtitle: secondayTitle((AuthController().user!.emailVerified)
                   //     ? 'Email Verified'
                   //     : 'Email Verification Pending'),
                 ),
@@ -239,33 +236,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Stack(
         children: [
           GestureDetector(
-            onTap: () async {
-              await showDialog(
+            onTap: () {
+              showDialog(
                 context: context,
                 builder: (context) => GetImageWidget(),
               ).then(
-                (imageFile) async {
+                (imageFile) {
                   if (imageFile != null) {
-                    WidgetUtil.showLoading(
-                      context,
-                      title: 'Uploading profile image',
+                    showDialog(
+                      context: context,
+                      builder: (builder) => CustomshowLoading(
+                        title: 'Uploading image',
+                      ),
                     );
-                    var imageUrl = await AppUtil.uploadFile(
+
+                    AppUtil.uploadFile(
                       isPost: false,
-                      file: imageFile,
-                      updateFileUrl: AuthController.user?.photoURL,
+                      file: imageFile[0],
+                      updateFileUrl: AuthController().user?.photoURL,
+                    ).then(
+                      (imageUrl) {
+                        appUser!.imageUrl = imageUrl;
+                        print('Done');
+
+                        AuthController().user!.updatePhotoURL(imageUrl).then(
+                              (value) => Navigator.of(context).pop,
+                            );
+                        print('Done 2');
+                        return;
+                      },
                     );
-                    appUser!.imageUrl = imageUrl;
-                    await AuthController.user!.updatePhotoURL(imageUrl);
-                    Navigator.of(context).pop;
-                    setState(() {});
                   }
                 },
               );
             },
             child: CircleAvatar(
               radius: 60,
-              child: (AuthController.user?.photoURL == null)
+              child: (AuthController().user?.photoURL == null)
                   ? const FlutterLogo(
                       size: 60,
                     )
@@ -277,7 +284,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         image: DecorationImage(
                           fit: BoxFit.cover,
                           image: NetworkImage(
-                            AuthController.user!.photoURL!,
+                            AuthController().user!.photoURL!,
                           ),
                         ),
                       ),
@@ -306,16 +313,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> updateDetailsToDatabase() async {
-    User user = AuthController.user!;
+    User? user = AuthController().user!;
     // await user.updateEmail(email!);
     await user.updateDisplayName(userName!);
+    user = AuthController().user;
+    print('The user name is $userName');
     appUser = appUser!.copyWith(
-      name: user.displayName,
+      name: user!.displayName,
       imageUrl: user.photoURL,
       phoneNumber: user.phoneNumber,
       userID: user.uid,
       email: user.email,
     );
+    print(appUser.toString());
     if (appUser != null) await Network.updateUser(appUser!);
   }
 

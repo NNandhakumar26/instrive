@@ -30,7 +30,7 @@ class _VerificationPageState extends State<VerificationPage> {
   String? phoneNumber;
 
   final _formKey = GlobalKey<FormState>();
-  User? user = AuthController.user;
+  User? user = AuthController().user;
 
   @override
   void initState() {

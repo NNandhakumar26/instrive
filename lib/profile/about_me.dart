@@ -1,26 +1,23 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instrive/common/services/extensions.dart';
 import 'package:instrive/common/services/navigation.dart';
 import 'package:instrive/common/widgets/common_appbar.dart';
+import 'package:instrive/posts/screens/posts_page.dart';
 import 'package:instrive/profile/profile_screen.dart';
+import 'package:instrive/registration_login/services/auth_controller.dart';
 
 import '../main.dart';
 
-class AboutPage extends StatefulWidget {
+class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
-  @override
-  State<AboutPage> createState() => _AboutPageState();
-}
+//   @override
+//   State<AboutPage> createState() => _AboutPageState();
+// }
 
-class _AboutPageState extends State<AboutPage> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
+// class _AboutPageState extends State<AboutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,10 +30,13 @@ class _AboutPageState extends State<AboutPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Padding(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
             padding: const EdgeInsets.all(8.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ListTile(
                   onTap: () => CustomNavigation.navigateBack(
@@ -48,98 +48,65 @@ class _AboutPageState extends State<AboutPage> {
                   title: Container(
                     padding: EdgeInsets.symmetric(vertical: 4),
                     child: Text(
-                      'Nandha Kumar',
+                      AuthController().user!.displayName ?? '',
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.headline6!.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.8,
-                            // color: Style.darkerText,
+                    ),
+                  ),
+                  leading: (AuthController().user?.photoURL == null)
+                      ? FlutterLogo()
+                      : CircleAvatar(
+                          radius: 24,
+                          foregroundImage: CachedNetworkImageProvider(
+                            AuthController().user!.photoURL!,
                           ),
-                    ),
-                  ),
-                  leading: FlutterLogo(),
-                  // CircleAvatar(
-                  //   radius: 40,
-                  //   backgroundImage: AssetImage('assets/images/jatayu.png'),
-                  //   foregroundImage: AssetImage('assets/images/human.jpg'),
-                  //   // child: (controller.imageUrl.value == null)
-                  //   //     ? Container(
-                  //   //         color: Styling.primary,
-                  //   //       )
-                  //   //     : Container(
-                  //   //         height: 150.h,
-                  //   //         width: 150.w,
-                  //   //         decoration: new BoxDecoration(
-                  //   //           shape: BoxShape.circle,
-                  //   //           image: new DecorationImage(
-                  //   //             fit: BoxFit.cover,
-                  //   //             image: NetworkImage(
-                  //   //                 controller.imageUrl.value.toString()),
-                  //   //           ),
-                  //   //         ),
-                  //   //       ),
-                  // ),
-
-                  subtitle: Text(
-                    '9585447986',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.4,
-                      color: Colors.black54,
-                      // color: lightTextColor,
-                    ),
-                  ),
+                        ),
+                  subtitle: 'Click to update / view profile'.subTitle,
                   trailing: FittedBox(
                     fit: BoxFit.scaleDown,
-                    child: Row(
-                      children: [
-                        Text(
-                          'Update',
-                          style: Theme.of(context).textTheme.caption,
-                        ),
-                        4.width,
-                        Icon(
-                          Icons.arrow_forward_ios_outlined,
-                          size: 14,
-                        )
-                      ],
+                    child: Icon(
+                      Icons.arrow_forward_ios_outlined,
+                      size: 14,
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      buildButton(context, '4.8', 'Images'),
-                      buildDivider(),
-                      buildButton(context, '4.8', 'Videos'),
-                      buildDivider(),
-                    ],
                   ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: Icon(Icons.restore_outlined),
-                      label: 'Delete Profile'.plainText,
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: () async {
-                        await FirebaseAuth.instance.signOut();
-                        if (!mounted) return;
-                        CustomNavigation.navigate(context, MyApp());
-                      },
-                      icon: Icon(Icons.logout_outlined),
-                      label: 'Log Out'.plainText,
+                    // OutlinedButton.icon(
+                    //   onPressed: () {}
+                    //   icon: Icon(Icons.restore_outlined),
+                    //   label: 'Delete Profile'.plainText,
+                    // ),
+                    Spacer(),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () async {
+                          await FirebaseAuth.instance.signOut();
+                          // if (!mounted) return;
+                          CustomNavigation.navigate(context, HomeScreen());
+                        },
+                        icon: Icon(Icons.logout_outlined),
+                        label: 'Log Out'.plainText,
+                      ),
                     ),
                   ],
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 4.0,
+                    horizontal: 8,
+                  ),
+                  child: Text(
+                    'Your Posts',
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                ),
+                Expanded(
+                  child: PostFeedPage(
+                    userId: AuthController().user!.uid,
+                  ),
+                )
               ],
             ),
           ),

@@ -12,7 +12,7 @@ class AuthController {
 //     await FirebaseAuth.instance.signInWithCredential(credential);
 
   static FirebaseAuth auth = FirebaseAuth.instance;
-  static User? user = auth.currentUser;
+  User? user = FirebaseAuth.instance.currentUser;
 
   static Future<UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow

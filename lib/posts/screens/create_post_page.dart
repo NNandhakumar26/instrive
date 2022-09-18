@@ -22,7 +22,7 @@ class PostCreationPage extends StatefulWidget {
 class _PostCreationPageState extends State<PostCreationPage> {
   final commentController = TextEditingController();
 
-  User? user = AuthController.user;
+  User? user = AuthController().user;
   Post post = Post();
 
   final files = <File?>[];
@@ -81,11 +81,11 @@ class _PostCreationPageState extends State<PostCreationPage> {
                           context: context,
                           builder: (context) => GetImageWidget(),
                         ).then(
-                          (files) {
-                            if (files != null) {
+                          (returnFiles) {
+                            if (returnFiles != null) {
                               setState(
                                 () {
-                                  files.addAll(files);
+                                  files.addAll(returnFiles);
                                 },
                               );
                             }
@@ -108,6 +108,7 @@ class _PostCreationPageState extends State<PostCreationPage> {
                 ),
               ],
             ),
+            // TODO:start from here
             ...files
                 .map(
                   (imageFile) => ListTile(
@@ -123,9 +124,6 @@ class _PostCreationPageState extends State<PostCreationPage> {
                     ),
                     title: Text(
                       'Image ${files.indexOf(imageFile) + 1}',
-                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                            color: Colors.black87,
-                          ),
                     ),
                     trailing: IconButton(
                       onPressed: () {

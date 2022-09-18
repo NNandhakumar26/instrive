@@ -214,6 +214,7 @@ class _PhoneAuthenticationPageState extends State<PhoneAuthenticationPage> {
             verificationId = thisVerificationId;
           });
           showSnackBar('OTP has been sent successfully');
+          initializeTimer();
         },
         codeAutoRetrievalTimeout: (String thisVerificationId) {
           print('Inside code auto retrieval timeout');

@@ -3,14 +3,17 @@ import 'package:instrive/common/services/extensions.dart';
 import 'package:instrive/common/services/navigation.dart';
 import 'package:instrive/profile/about_me.dart';
 
+import '../../main.dart';
+
 class CompanyAppbar extends StatelessWidget {
   final bool showProfileIcon;
   final Widget? actionWidget;
-  const CompanyAppbar({
+  CompanyAppbar({
     super.key,
     this.showProfileIcon = false,
     this.actionWidget,
   });
+  // final ThemeNotifier themeNotifier = ThemeNotifier();
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +34,9 @@ class CompanyAppbar extends StatelessWidget {
             ),
           ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Constants.themeNotifier.value = !Constants.themeNotifier.value;
+          },
           icon: Icon(
             Icons.sunny,
           ),
