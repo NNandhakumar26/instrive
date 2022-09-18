@@ -1,11 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instrive/common/services/extensions.dart';
+import 'package:instrive/common/services/navigation.dart';
 import 'package:instrive/common/widgets/loading_dialog.dart';
+import 'package:instrive/registration_login/screens/phone_number_auth.dart';
 import 'package:instrive/registration_login/services/auth_controller.dart';
 
-class GoogleSignInWidget extends StatelessWidget {
-  GoogleSignInWidget({super.key});
+class SignInOptionsWidget extends StatelessWidget {
+  SignInOptionsWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,17 +25,46 @@ class GoogleSignInWidget extends StatelessWidget {
           ),
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            const SizedBox(
-              width: 20,
+            SizedBox(
+              height: 50,
+              child: OutlinedButton(
+                onPressed: () async => CustomNavigation.navigateBack(
+                    context, PhoneAuthenticationPage()),
+                style: const ButtonStyle(
+                  padding: MaterialStatePropertyAll(
+                    EdgeInsets.symmetric(horizontal: 32),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.phone,
+                      size: 18,
+                      color: Colors.green,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      "Phone",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             SizedBox(
               height: 50,
               child: OutlinedButton(
                 onPressed: () async {
-                  const CustomLoadingDialog();
+                  const CustomshowLoading();
                   UserCredential userCredential =
                       await AuthController.signInWithGoogle();
                   if (userCredential.user != null) {
@@ -51,26 +83,24 @@ class GoogleSignInWidget extends StatelessWidget {
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const <Widget>[
-                    // Icon(
-                    //   Icons.facebook_rounded,
-                    //   // Icons.twitter,
-                    //   size: 20,
-                    // ),
-                    // SizedBox(
-                    //   width: 5,
-                    // ),
-                    Text(
+                  children: [
+                    CachedNetworkImage(
+                      imageUrl:
+                          "https://firebasestorage.googleapis.com/v0/b/flutterbricks-public.appspot.com/o/crypto%2Fsearch%20(2).png?alt=media&token=24a918f7-3564-4290-b7e4-08ff54b3c94c",
+                      width: 20,
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Text(
                       "Google",
                       style: TextStyle(
                         color: Colors.black,
+                        fontSize: 16,
                       ),
                     ),
                   ],
                 ),
-                // shape: StadiumBorder(),
-                // highlightedBorderColor: Colors.black,
-                // borderSide: BorderSide(color: Colors.black),
               ),
             ),
           ],
@@ -88,3 +118,34 @@ class GoogleSignInWidget extends StatelessWidget {
     ),
   );
 }
+
+// class GoogleBtn1 extends StatelessWidget {
+//   final Function() onPressed;
+//   const GoogleBtn1({
+//     required this.onPressed,
+//     Key? key,
+//   }) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       height: 54,
+//       margin: const EdgeInsets.all(15),
+//       decoration: BoxDecoration(
+//         borderRadius: BorderRadius.circular(15),
+//         color: Colors.white,
+//       ),
+//       child: TextButton(
+//         style: ButtonStyle(
+//           shape: MaterialStateProperty.all(
+//             RoundedRectangleBorder(
+//               borderRadius: BorderRadius.circular(15),
+//             ),
+//           ),
+//         ),
+//         onPressed: onPressed,
+//         child: 
+//       ),
+//     );
+//   }
+// }

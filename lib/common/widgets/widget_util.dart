@@ -3,13 +3,13 @@ import 'package:instrive/common/services/extensions.dart';
 import 'package:instrive/common/widgets/loading_dialog.dart';
 
 class WidgetUtil {
-  static Future loadingDialog(BuildContext context,
+  static Future showLoading(BuildContext context,
       {Widget? widget, String? title}) {
     return showDialog(
       context: context,
       builder: (context) => (widget != null)
           ? widget
-          : CustomLoadingDialog(
+          : CustomshowLoading(
               title: title ?? '',
             ),
     );

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:instrive/common/services/extensions.dart';
 
-class CustomLoadingDialog extends StatelessWidget {
+class CustomshowLoading extends StatelessWidget {
   final String title;
-  const CustomLoadingDialog({this.title = 'Loading...', Key? key})
+  const CustomshowLoading({this.title = 'Loading...', Key? key})
       : super(key: key);
 
   @override

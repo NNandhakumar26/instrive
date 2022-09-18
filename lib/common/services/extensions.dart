@@ -24,7 +24,14 @@ extension StringExtensions on String? {
         ),
       );
 
-  Widget get loadingDialog => Dialog(
+  Widget get subTitle => Text(
+        this ?? '',
+        style: TextStyle(
+          color: Colors.grey.shade400,
+        ),
+      );
+
+  Widget get showLoading => Dialog(
         elevation: 16,
         child: Padding(
           padding: const EdgeInsets.all(24.0),

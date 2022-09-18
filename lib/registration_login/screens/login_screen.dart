@@ -85,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () async {
-                    WidgetUtil.loadingDialog(context, title: 'Hold on a while');
+                    WidgetUtil.showLoading(context, title: 'Hold on a while');
                     String? response =
                         await AuthController.signInUser(loginId!, password!);
                     if (!mounted) return;
@@ -162,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
               ),
-              GoogleSignInWidget(),
+              SignInOptionsWidget(),
               20.height,
             ],
           ),

@@ -24,8 +24,8 @@ class _PhoneAuthenticationPageState extends State<PhoneAuthenticationPage> {
   String? contactNumber;
   String? otp;
   String? verificationId;
-  late Timer timer;
-  int secondsRemaining = 30;
+  Timer? timer;
+  int secondsRemaining = 60;
   bool enableResend = false;
 
   void initializeTimer() {
@@ -46,7 +46,7 @@ class _PhoneAuthenticationPageState extends State<PhoneAuthenticationPage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    if (timer.isActive) timer.cancel();
+    if ((timer != null) && (timer!.isActive)) timer!.cancel();
   }
 
   @override
@@ -56,30 +56,6 @@ class _PhoneAuthenticationPageState extends State<PhoneAuthenticationPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        // actions: <Widget>[
-        //   Padding(
-        //     padding: const EdgeInsets.fromLTRB(0, 15, 20, 0),
-        //     child: TextButton(
-        //       child: const Text(
-        //         "Phone Number Authentication",
-        //         style: TextStyle(
-        //           color: Colors.grey,
-        //           fontSize: 18,
-        //         ),
-        //       ),
-        //       onPressed: () {
-        //         Navigator.push(
-        //           context,
-        //           MaterialPageRoute(
-        //             builder: (context) => const LoginPage(),
-        //           ),
-        //         );
-        //       },
-        //       // highlightColor: Colors.black,
-        //       // shape: StadiumBorder(),
-        //     ),
-        //   ),
-        // ],
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -114,6 +90,7 @@ class _PhoneAuthenticationPageState extends State<PhoneAuthenticationPage> {
                     )
                   : Column(
                       children: [
+                        12.height,
                         'OTP has been sent to the number'.centerText,
                         Padding(
                           padding: EdgeInsets.symmetric(vertical: 8),
@@ -141,7 +118,29 @@ class _PhoneAuthenticationPageState extends State<PhoneAuthenticationPage> {
                           ),
                         ),
                         8.height,
-                        '$secondsRemaining'.plainText,
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (!timer!.isActive)
+                                Text(
+                                  'Did Not Receive OTP?',
+                                  style: Theme.of(context).textTheme.subtitle1,
+                                ),
+                              TextButton(
+                                onPressed: () {
+                                  enableResend ? _resendCode() : null;
+                                },
+                                child: Text(
+                                  secondsRemaining == 0
+                                      ? "Resend OTP"
+                                      : "OTP expires in ${secondsRemaining.toString()} Seconds",
+                                  style: Theme.of(context).textTheme.subtitle1,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
                       ],
                     ),
               30.height,
@@ -164,32 +163,20 @@ class _PhoneAuthenticationPageState extends State<PhoneAuthenticationPage> {
                 ),
               ),
               30.height,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  "By signing up you agree to our ".plainText,
-                  GestureDetector(
-                    child: "Terms of Use".underlineText,
-                    onTap: () {},
-                  )
-                ],
-              ),
-              5.height,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  "and ".plainText,
-                  GestureDetector(
-                    child: "Privacy Policy".underlineText,
-                    onTap: () {},
-                  ),
-                ],
-              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _resendCode() async {
+    contactNumberRegistration();
+    setState(() {
+      secondsRemaining = 30;
+      enableResend = false;
+    });
+    initializeTimer();
   }
 
   void contactNumberRegistration() async {

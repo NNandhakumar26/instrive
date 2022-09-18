@@ -6,36 +6,41 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AppUtil {
-  Future<XFile?> chooseFile() async {
+  static Future<XFile?> chooseFile() async {
     return await ImagePicker().pickImage(source: ImageSource.gallery);
   }
 
-  Future<String> uploadFile(XFile image) async {
-    // Create a storage reference from our app
+  static Future<String> uploadFile({
+    required bool isPost,
+    required File file,
+    String? updateFileUrl,
+  }) async {
+    if (updateFileUrl != null) {
+      await deleteFile(updateFileUrl);
+    }
+
     final storageRef = FirebaseStorage.instance.ref();
 
-// Create a reference to "mountains.jpg"
-    final mountainsRef = storageRef.child("mountains.jpg");
-
-// Create a reference to 'images/mountains.jpg'
-    final mountainImagesRef = storageRef.child("images/mountains.jpg");
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    String filePath = '${appDocDir.absolute}/file-to-upload.png';
-    File file = File(filePath);
+    var imageRef = (isPost)
+        ? storageRef.child("post/${file.path.split('/').last}")
+        : storageRef.child("userDP/${file.path.split('/').last}");
 
     try {
-      await mountainsRef.putFile(file);
+      await imageRef.putFile(file);
     } on Exception catch (e) {
       // ...
     }
-    return await mountainsRef.getDownloadURL();
+    return await imageRef.getDownloadURL();
+  }
 
-    // final storageReference = FirebaseStorage.instance
-    //     .ref()
-    //     .child('chats/${Path.basename(image.path)}}');
-    // final uploadTask = storageReference.putFile(File(image.path));
-    // await uploadTask.onComplete;
-    // print('File Uploaded');
-    // return storageReference.getDownloadURL();
+  static Future<void> deleteFile(String url) async {
+    final storageRef = FirebaseStorage.instance.refFromURL(url);
+
+    try {
+      await storageRef.delete();
+    } on Exception catch (e) {
+      // ...
+    }
+    return;
   }
 }

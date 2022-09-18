@@ -1,13 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:instrive/common/services/app_utils.dart';
 import 'package:instrive/common/services/extensions.dart';
 import 'package:instrive/common/services/navigation.dart';
 import 'package:instrive/common/widgets/empty_widget.dart';
-import 'package:instrive/common/widgets/loading_dialog.dart';
+import 'package:instrive/common/widgets/widget_util.dart';
+import 'package:instrive/modals/app_users.dart';
 import 'package:instrive/posts/screens/posts_page.dart';
 import 'package:instrive/registration_login/screens/verification_screen.dart';
 import 'package:instrive/registration_login/services/auth_controller.dart';
 import 'package:instrive/registration_login/services/validators.dart';
+import '../common/services/network_database.dart';
+import '../posts/widgets/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
   final bool isNewUser;
@@ -27,24 +31,39 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final formKey = GlobalKey<FormState>();
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  String? photoUrl;
   String? userName;
   String? contactNumber;
   String? email;
   String? password;
   String? passwordConfirm;
+  AppUser? appUser;
+  User? user;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-    User? user = AuthController.user;
+    user = AuthController.user;
+    initializeAppuser(user);
     if (user != null) {
-      photoUrl = user.photoURL;
-      userName = user.displayName;
-      contactNumber = user.phoneNumber;
-      email = user.email;
+      userName = user!.displayName;
+      contactNumber = user!.phoneNumber;
+      email = user!.email;
+    }
+  }
+
+  void initializeAppuser(User? user) {
+    if (!widget.isNewUser) {
+      Network.readUser(user!.uid).then(
+        (value) => setState(
+          () {
+            appUser = value;
+          },
+        ),
+      );
+    } else {
+      appUser = AppUser();
     }
   }
 
@@ -85,69 +104,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: ListView(
               children: [
                 24.height,
-                Center(
-                  child: Stack(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          // ImageSelectionBottomSheet(context);
-                        },
-                        child: CircleAvatar(
-                          radius: 60,
-                          child: (photoUrl == null)
-                              ? const FlutterLogo(
-                                  size: 60,
-                                )
-                              : Container(
-                                  height: 150,
-                                  width: 150,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: NetworkImage(photoUrl!),
-                                    ),
-                                  ),
-                                ),
-                        ),
-                      ),
-                      Positioned(
-                        right: 4,
-                        top: 2,
-                        child: GestureDetector(
-                          onTap: () {
-                            // ImageSelectionBottomSheet(context);
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.87),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.edit,
-                              size: 16,
-                              color: Colors.blue.shade700,
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                // Center(
-                //   child: Stack(
-                //     children: [
-                //       buildImage(),
-                //       Positioned(
-                //         bottom: 0,
-                //         right: 4,
-                //         child: buildEditIcon(Style.nearlyDarkBlue),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                32.height,
+                displayImageWidget(context),
+                24.height,
                 TextFormField(
                   decoration: inputDecoration('Name', Icons.person_add),
                   initialValue: userName,
@@ -158,34 +116,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ? 'Cannot be empty'
                       : null,
                 ),
-
-                ListTile(
-                  onTap: () => CustomNavigation.navigateBack(
-                    context,
-                    VerificationPage(
-                      verify: Verify.emailAddress,
-                    ),
-                  ),
-                  title: 'Update Email Address'.plainText,
-                  trailing: forwardIcon,
-                  subtitle: secondayTitle((AuthController.user!.emailVerified)
-                      ? 'Email Verified'
-                      : 'Email Verification Pending'),
-                ),
-                ListTile(
-                  title: 'Update Phone Number'.plainText,
-                  trailing: forwardIcon,
-                  subtitle: secondayTitle('Authenticate phone number'),
-                ),
-                ListTile(
-                  enabled: email?.isNotEmpty ?? false,
-                  title: (widget.isNewUser)
-                      ? 'Set up password'.plainText
-                      : 'Reset Password'.plainText,
-                  trailing: forwardIcon,
-                  subtitle: secondayTitle('Authenticate to reset password'),
-                ),
-
+                8.height,
                 TextFormField(
                   decoration:
                       inputDecoration('Mobile Number', Icons.call_rounded),
@@ -198,37 +129,85 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     contactNumber = value;
                   },
                 ),
+                8.height,
                 TextFormField(
                   decoration: inputDecoration('Email Address', Icons.mail),
-                  validator: (value) =>
-                      Validators.isValidEmail(value) ? null : 'Invalid Email',
+                  // validator: (value) =>
+                  //     Validators.isValidEmail(value) ? null : 'Invalid Email',
                   initialValue: email,
+                  readOnly: true,
                   onSaved: (value) {
                     email = value;
                   },
                 ),
-
+                8.height,
+                TextFormField(
+                  decoration: inputDecoration(
+                    'About',
+                    Icons.description_outlined,
+                  ),
+                  maxLines: 4,
+                  initialValue: appUser?.bio ?? '',
+                  onSaved: (value) {
+                    if (appUser != null) appUser!.bio = value;
+                  },
+                ),
+                12.height,
+                ListTile(
+                  onTap: () => CustomNavigation.navigateBack(
+                    context,
+                    VerificationPage(
+                      verify: Verify.emailAddress,
+                    ),
+                  ),
+                  enabled: false,
+                  title: 'Update Email Address'.plainText,
+                  trailing: forwardIcon,
+                  subtitle: 'Feature under Development'.plainText,
+                  // subtitle: secondayTitle((AuthController.user!.emailVerified)
+                  //     ? 'Email Verified'
+                  //     : 'Email Verification Pending'),
+                ),
+                ListTile(
+                  title: 'Update Phone Number'.plainText,
+                  trailing: forwardIcon,
+                  enabled: false,
+                  subtitle: secondayTitle('Authenticate phone number'),
+                ),
+                ListTile(
+                  enabled: false,
+                  // enabled: email?.isNotEmpty ?? false,
+                  title: (widget.isNewUser)
+                      ? 'Set up password'.plainText
+                      : 'Reset Password'.plainText,
+                  trailing: forwardIcon,
+                  subtitle: secondayTitle('Authenticate to update password'),
+                ),
+                16.height,
                 ElevatedButton(
                   style: ButtonStyle(
                     padding: MaterialStateProperty.all(
-                        const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 8)),
-                    backgroundColor: MaterialStateProperty.all(
-                      Colors.black38,
+                      const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (formKey.currentState!.validate()) {
                       formKey.currentState!.save();
-                      const CustomLoadingDialog(
-                        title: 'Updating User Information',
+                      WidgetUtil.showLoading(
+                        context,
+                        title: 'Updating info',
                       );
-                      AuthController.user!.updateEmail(email!);
-                      AuthController.user!.updateDisplayName(userName!);
-                      AuthController.user!.updatePhotoURL(photoUrl);
+                      await updateDetailsToDatabase();
+
                       // ** Remove The Popup **
-                      Navigator.pop(context);
+                      Navigator.of(context).pop();
+
                       // ** Remove the main screen **
+                      // if (!context.mounted) return;
+
                       if (widget.isNewUser) {
                         CustomNavigation.navigate(context, PostFeedPage());
                       } else {
@@ -255,11 +234,96 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget displayImageWidget(BuildContext context) {
+    return Center(
+      child: Stack(
+        children: [
+          GestureDetector(
+            onTap: () async {
+              await showDialog(
+                context: context,
+                builder: (context) => GetImageWidget(),
+              ).then(
+                (imageFile) async {
+                  if (imageFile != null) {
+                    WidgetUtil.showLoading(
+                      context,
+                      title: 'Uploading profile image',
+                    );
+                    var imageUrl = await AppUtil.uploadFile(
+                      isPost: false,
+                      file: imageFile,
+                      updateFileUrl: AuthController.user?.photoURL,
+                    );
+                    appUser!.imageUrl = imageUrl;
+                    await AuthController.user!.updatePhotoURL(imageUrl);
+                    Navigator.of(context).pop;
+                    setState(() {});
+                  }
+                },
+              );
+            },
+            child: CircleAvatar(
+              radius: 60,
+              child: (AuthController.user?.photoURL == null)
+                  ? const FlutterLogo(
+                      size: 60,
+                    )
+                  : Container(
+                      height: 150,
+                      width: 150,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(
+                            AuthController.user!.photoURL!,
+                          ),
+                        ),
+                      ),
+                    ),
+            ),
+          ),
+          Positioned(
+            right: 4,
+            top: 2,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.87),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.edit,
+                size: 16,
+                color: Colors.blue.shade700,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Future<void> updateDetailsToDatabase() async {
+    User user = AuthController.user!;
+    // await user.updateEmail(email!);
+    await user.updateDisplayName(userName!);
+    appUser = appUser!.copyWith(
+      name: user.displayName,
+      imageUrl: user.photoURL,
+      phoneNumber: user.phoneNumber,
+      userID: user.uid,
+      email: user.email,
+    );
+    if (appUser != null) await Network.updateUser(appUser!);
+  }
+
   Widget secondayTitle(String title) => Row(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: [
+        children: const [
           EmptyWidget(
-            title,
+            'Feature Under Development',
             textAlign: TextAlign.left,
           ),
         ],

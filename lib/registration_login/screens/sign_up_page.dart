@@ -132,7 +132,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     },
                   ),
                 ),
-                GoogleSignInWidget(),
+                SignInOptionsWidget(),
                 // Container(
                 //   padding: const EdgeInsets.fromLTRB(0, 30, 0, 30),
                 //   child: const Text(

@@ -21,7 +21,7 @@ class CustomAlertDialog extends StatelessWidget {
     this.secondaryButton = 'Cancel',
     this.noActions = false,
   }) : super(key: key);
-  // const CustomLoadingDialog({Key? key}) : super(key: key);
+  // const CustomshowLoading({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

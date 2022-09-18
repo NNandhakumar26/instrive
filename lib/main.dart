@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
           //     isNewUser: true,
           //   );
           default:
-            return const CustomLoadingDialog(
+            return const CustomshowLoading(
               title: 'Initalizing...',
             );
         }
