@@ -30,7 +30,6 @@ class CustomAlertDialog extends StatelessWidget {
       title: Text(
         title,
         style: Theme.of(context).textTheme.headline6!.copyWith(
-              color: Colors.black87,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
@@ -54,7 +53,6 @@ class CustomAlertDialog extends StatelessWidget {
                 child: Text(
                   secondaryButton,
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                        color: Theme.of(context).primaryColor,
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                       ),

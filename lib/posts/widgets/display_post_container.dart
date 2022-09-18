@@ -124,7 +124,7 @@ class PostUserContainer extends StatelessWidget {
               fontWeight: FontWeight.w400,
             ),
       ),
-      trailing: (post.userID == (AuthController().user?.uid ?? ''))
+      trailing: !(post.userID == (AuthController().user?.uid ?? ''))
           ? 'Follow'.subTitle
           : FittedBox(
               fit: BoxFit.scaleDown,
@@ -146,7 +146,7 @@ class PostUserContainer extends StatelessWidget {
                           context,
                           title: 'Deleting post',
                         );
-                        await Network.updatePost(post);
+                        await Network.deletePost(post.postID!);
                         // remove the showLoading
                         Navigator.pop(context);
 
