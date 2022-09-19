@@ -1,9 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
-import '../../common/widgets/alert_dialog.dart';
 
 class GetImageWidget extends StatelessWidget {
   final bool canMultiSelect;
@@ -33,18 +30,18 @@ class GetImageWidget extends StatelessWidget {
                           await _picker
                               .pickImage(
                                 source: ImageSource.camera,
-                                imageQuality: 75,
+                                // imageQuality: 75,
                               )
                               .then((value) => image!.add(value));
                         } else {
                           image = (canMultiSelect)
                               ? await _picker.pickMultiImage(
-                                  imageQuality: 75,
-                                )
+                                  // imageQuality: 75,
+                                  )
                               : [
                                   await _picker.pickImage(
                                     source: ImageSource.gallery,
-                                    imageQuality: 75,
+                                    // imageQuality: 75,
                                   )
                                 ];
                         }

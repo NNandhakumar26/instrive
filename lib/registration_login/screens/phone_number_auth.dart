@@ -58,112 +58,154 @@ class _PhoneAuthenticationPageState extends State<PhoneAuthenticationPage> {
         elevation: 0.0,
       ),
       body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                (isContactNumberPage)
-                    ? "Phone Number Authentication"
-                    : 'OTP Verfication',
-                style: const TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              // 70.height,
-              (isContactNumberPage)
-                  ? TextField(
-                      keyboardType: TextInputType.number,
-                      autocorrect: false,
-                      // validator: (value) => Validators.isValidPhoneNumber(value!)
-                      //     ? null
-                      //     : 'Invalid Contact Number',
-                      onChanged: (value) => contactNumber = value,
-
-                      decoration: const InputDecoration(
-                        labelText: "Contact Number",
-                      ),
-                    )
-                  : Column(
-                      children: [
-                        12.height,
-                        'OTP has been sent to the number'.centerText,
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Text(
-                            contactNumber.toString(),
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                        ),
-                        8.height,
-                        TextField(
-                          keyboardType: TextInputType.number,
-                          autocorrect: false,
-                          // validator: (value) => Validators.isValidPhoneNumber(value!)
-                          //     ? null
-                          //     : 'Invalid Contact Number',
-                          onChanged: (value) => otp = value,
-                          style: const TextStyle(
-                            color: Colors.black87,
-                            fontSize: 18,
-                          ),
-                          textAlign: TextAlign.center,
-                          decoration: const InputDecoration(
-                            labelText: "OTP Number",
-                          ),
-                        ),
-                        8.height,
-                        Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (!timer!.isActive)
-                                Text(
-                                  'Did Not Receive OTP?',
-                                  style: Theme.of(context).textTheme.subtitle1,
-                                ),
-                              TextButton(
-                                onPressed: () {
-                                  enableResend ? _resendCode() : null;
-                                },
-                                child: Text(
-                                  secondsRemaining == 0
-                                      ? "Resend OTP"
-                                      : "OTP expires in ${secondsRemaining.toString()} Seconds",
-                                  style: Theme.of(context).textTheme.subtitle1,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-              30.height,
-              SizedBox(
-                height: 50,
-                child: ElevatedButton(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height - 120,
+          width: MediaQuery.of(context).size.width,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Spacer(),
+                Expanded(
                   child: Text(
-                    (isContactNumberPage) ? "Send OTP" : 'Verify OTP',
+                    (isContactNumberPage)
+                        ? "Phone Number Authentication"
+                        : 'OTP Verfication',
                     style: const TextStyle(
-                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
-                  // color: Colors.black,
-                  // elevation: 15.0,
-                  // shape: StadiumBorder(),
-                  // splashColor: Colors.white54,
-                  onPressed: () => (isContactNumberPage)
-                      ? contactNumberRegistration()
-                      : validateOtp(),
                 ),
-              ),
-              30.height,
-            ],
+                // 70.height,
+                Flexible(
+                  flex: 2,
+                  fit: FlexFit.loose,
+                  child: Card(
+                    margin: EdgeInsets.all(8),
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12.0,
+                        horizontal: 16,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          (isContactNumberPage)
+                              ? TextField(
+                                  keyboardType: TextInputType.number,
+                                  autocorrect: false,
+                                  // validator: (value) => Validators.isValidPhoneNumber(value!)
+                                  //     ? null
+                                  //     : 'Invalid Contact Number',
+                                  onChanged: (value) => contactNumber = value,
+
+                                  decoration: const InputDecoration(
+                                    labelText: "Contact Number",
+                                  ),
+                                )
+                              : Column(
+                                  children: [
+                                    12.height,
+                                    'OTP has been sent to the number'
+                                        .centerText,
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 8),
+                                      child: Text(
+                                        contactNumber.toString(),
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline6,
+                                      ),
+                                    ),
+                                    8.height,
+                                    TextField(
+                                      keyboardType: TextInputType.number,
+                                      autocorrect: false,
+                                      // validator: (value) => Validators.isValidPhoneNumber(value!)
+                                      //     ? null
+                                      //     : 'Invalid Contact Number',
+                                      onChanged: (value) => otp = value,
+                                      style: const TextStyle(
+                                        color: Colors.black87,
+                                        fontSize: 18,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      decoration: const InputDecoration(
+                                        labelText: "OTP Number",
+                                      ),
+                                    ),
+                                    8.height,
+                                    Center(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          if (!timer!.isActive)
+                                            Text(
+                                              'Did Not Receive OTP?',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .subtitle1,
+                                            ),
+                                          TextButton(
+                                            onPressed: () {
+                                              enableResend
+                                                  ? _resendCode()
+                                                  : null;
+                                            },
+                                            child: Text(
+                                              secondsRemaining == 0
+                                                  ? "Resend OTP"
+                                                  : "OTP expires in ${secondsRemaining.toString()} Seconds",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .subtitle1,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                          24.height,
+                          SizedBox(
+                            height: 40,
+                            child: ElevatedButton(
+                              child: Text(
+                                (isContactNumberPage)
+                                    ? "Send OTP"
+                                    : 'Verify OTP',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              // color: Colors.black,
+                              // elevation: 15.0,
+                              // shape: StadiumBorder(),
+                              // splashColor: Colors.white54,
+                              onPressed: () => (isContactNumberPage)
+                                  ? contactNumberRegistration()
+                                  : validateOtp(),
+                            ),
+                          ),
+                          8.height,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
