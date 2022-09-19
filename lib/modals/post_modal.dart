@@ -59,11 +59,12 @@ class Post {
       userName: map['userName'],
       userPhoto: map['userPhoto'],
       userID: map['userID'],
-      description: map['description'],
+      description: map['description'] != null ? map['description'] : null,
       dateTime: map['dateTime'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['dateTime'])
           : null,
-      postUrls: List<String>.from(map['postUrls']),
+      postUrls:
+          map['postUrls'] != null ? List<String>.from(map['postUrls']) : null,
     );
   }
 

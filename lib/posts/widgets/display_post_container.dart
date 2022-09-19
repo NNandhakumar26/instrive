@@ -28,37 +28,33 @@ class PostContainer extends StatelessWidget {
         children: [
           8.height,
           PostUserContainer(thisPost),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height / 1.64,
-              maxWidth: MediaQuery.of(context).size.width,
-            ),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.grey,
-                width: 0.8,
+          if (thisPost.postUrls != null)
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height / 1.64,
+                maxWidth: MediaQuery.of(context).size.width,
               ),
-              borderRadius: BorderRadius.circular(2),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.grey,
+                  width: 0.8,
+                ),
+                borderRadius: BorderRadius.circular(2),
+              ),
+              child: ImageSlideshow(
+                initialPage: 0,
+                indicatorColor: Colors.blue,
+                indicatorBackgroundColor: Colors.grey,
+                children: thisPost.postUrls!
+                    .map(
+                      (e) => CachedNetworkImage(
+                        imageUrl: e,
+                      ),
+                    )
+                    .toList(),
+              ),
             ),
-            child: (thisPost.postUrls!.length == 1)
-                ? CachedNetworkImage(
-                    imageUrl: thisPost.postUrls![0],
-                    color: Colors.black,
-                  )
-                : ImageSlideshow(
-                    initialPage: 0,
-                    indicatorColor: Colors.blue,
-                    indicatorBackgroundColor: Colors.grey,
-                    children: thisPost.postUrls!
-                        .map(
-                          (e) => CachedNetworkImage(
-                            imageUrl: e,
-                          ),
-                        )
-                        .toList(),
-                  ),
-          ),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             child: Column(

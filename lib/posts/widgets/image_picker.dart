@@ -33,14 +33,18 @@ class GetImageWidget extends StatelessWidget {
                           await _picker
                               .pickImage(
                                 source: ImageSource.camera,
+                                imageQuality: 75,
                               )
                               .then((value) => image!.add(value));
                         } else {
                           image = (canMultiSelect)
-                              ? await _picker.pickMultiImage()
+                              ? await _picker.pickMultiImage(
+                                  imageQuality: 75,
+                                )
                               : [
                                   await _picker.pickImage(
                                     source: ImageSource.gallery,
+                                    imageQuality: 75,
                                   )
                                 ];
                         }
