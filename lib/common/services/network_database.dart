@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:instrive/common/services/app_utils.dart';
 import '../../modals/app_users.dart';
 import '../../modals/post_modal.dart';
 
@@ -66,6 +67,13 @@ class Network {
   static Future<void> updatePost(Post post) async =>
       await postInstance.doc(post.postID).update(post.toMap());
   // function to delete a post
-  static Future<void> deletePost(String id) async =>
-      await postInstance.doc(id).delete();
+  static Future<void> deletePost(String id, List<String>? fileUrls) async {
+    if (fileUrls != null) {
+      for (var file in fileUrls) {
+        await AppUtil.deleteFile(file);
+      }
+    }
+
+    return await postInstance.doc(id).delete();
+  }
 }
