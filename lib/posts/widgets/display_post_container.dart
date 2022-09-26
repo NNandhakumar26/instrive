@@ -142,7 +142,7 @@ class PostUserContainer extends StatelessWidget {
                           context,
                           title: 'Deleting post',
                         );
-                        await Network.deletePost(post.postID!);
+                        await Network.deletePost(post.postID!, post.postUrls);
                         // remove the showLoading
                         Navigator.pop(context);
 
