@@ -27,12 +27,12 @@ class GetImageWidget extends StatelessWidget {
                       onTap: () async {
                         List<XFile?>? image = [];
                         if (e == 'Camera') {
-                          await _picker
-                              .pickImage(
-                                source: ImageSource.camera,
-                                // imageQuality: 75,
-                              )
-                              .then((value) => image!.add(value));
+                          image = [
+                            await _picker.pickImage(
+                              source: ImageSource.camera,
+                              imageQuality: 80,
+                            )
+                          ];
                         } else {
                           image = (canMultiSelect)
                               ? await _picker.pickMultiImage(
@@ -45,18 +45,18 @@ class GetImageWidget extends StatelessWidget {
                                   )
                                 ];
                         }
-
-                        // ignore: use_build_context_synchronously
-                        Navigator.pop(
-                          context,
-                          ((image == null) || image.isEmpty)
-                              ? null
-                              : image
-                                  .map(
-                                    (e) => File(e!.path),
-                                  )
-                                  .toList(),
-                        );
+                        var returnFile = (image != null &&
+                                image[0] != null &&
+                                image.isNotEmpty)
+                            ? image
+                                .map(
+                                  (e) => File(e!.path),
+                                )
+                                .toList()
+                            : null;
+                        print('The return file is $returnFile');
+                        Navigator.pop(context, returnFile);
+                        return;
                       },
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 4,
