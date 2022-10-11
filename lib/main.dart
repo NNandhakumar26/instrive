@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -7,12 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:instrive/common/services/extensions.dart';
 import 'package:instrive/common/widgets/loading_dialog.dart';
 import 'package:instrive/posts/screens/posts_page.dart';
-import 'package:instrive/profile/profile_screen.dart';
 import 'package:instrive/registration_login/screens/login_screen.dart';
-import 'package:instrive/registration_login/services/auth_controller.dart';
 import 'package:json_theme/json_theme.dart';
-import 'registration_login/screens/phone_number_auth.dart';
-import 'registration_login/screens/sign_up_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +15,7 @@ void main() async {
   final themeStr = await rootBundle.loadString('assets/appainter_theme.json');
   final themeJson = json.decode(themeStr);
   var theme = ThemeDecoder.decodeThemeData(themeJson);
-
+  // debugPrint('This is temp');
   runApp(MyApp(theme!));
 }
 
