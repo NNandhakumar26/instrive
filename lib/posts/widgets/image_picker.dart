@@ -4,9 +4,11 @@ import 'package:image_picker/image_picker.dart';
 
 class GetImageWidget extends StatelessWidget {
   final bool canMultiSelect;
+  final bool isVideoFile;
   GetImageWidget({
     Key? key,
     this.canMultiSelect = true,
+    this.isVideoFile = false,
   }) : super(key: key);
 
   final ImagePicker _picker = ImagePicker();
@@ -25,35 +27,45 @@ class GetImageWidget extends StatelessWidget {
                   children: [
                     ListTile(
                       onTap: () async {
-                        List<XFile?>? image = [];
+                        List<XFile?>? file = [];
                         if (e == 'Camera') {
-                          image = [
-                            await _picker.pickImage(
-                              source: ImageSource.camera,
-                              imageQuality: 80,
-                            )
+                          file = [
+                            (!isVideoFile)
+                                ? await _picker.pickImage(
+                                    source: ImageSource.camera,
+                                    imageQuality: 80,
+                                  )
+                                : await _picker.pickVideo(
+                                    source: ImageSource.camera,
+                                  )
                           ];
                         } else {
-                          image = (canMultiSelect)
-                              ? await _picker.pickMultiImage(
-                                  // imageQuality: 75,
-                                  )
-                              : [
-                                  await _picker.pickImage(
-                                    source: ImageSource.gallery,
+                          if (!isVideoFile)
+                            file = (canMultiSelect)
+                                ? await _picker.pickMultiImage(
                                     // imageQuality: 75,
-                                  )
-                                ];
+                                    )
+                                : [
+                                    await _picker.pickImage(
+                                      source: ImageSource.gallery,
+                                      // imageQuality: 75,
+                                    )
+                                  ];
+                          else
+                            file = [
+                              await _picker.pickVideo(
+                                source: ImageSource.gallery,
+                              )
+                            ];
                         }
-                        var returnFile = (image != null &&
-                                image[0] != null &&
-                                image.isNotEmpty)
-                            ? image
-                                .map(
-                                  (e) => File(e!.path),
-                                )
-                                .toList()
-                            : null;
+                        var returnFile =
+                            (file != null && file[0] != null && file.isNotEmpty)
+                                ? file
+                                    .map(
+                                      (e) => File(e!.path),
+                                    )
+                                    .toList()
+                                : null;
                         print('The return file is $returnFile');
                         Navigator.pop(context, returnFile);
                         return;
